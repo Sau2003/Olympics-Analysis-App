@@ -24,7 +24,11 @@ def read_csv_safely(file_path):
             print(f"Error reading file with encoding {encoding}: {e}")
             continue
     raise ValueError("Unable to read the file with supported encodings and options.")
-
+try:
+    df = read_csv_safely('athlete_events.csv')
+    region_df = read_csv_safely('noc_regions.csv')
+except ValueError as e:
+    st.error(f"Failed to load data: {e}")
 
 # Read CSV files
 df = read_csv_safely('athlete_events.csv')
