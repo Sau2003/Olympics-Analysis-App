@@ -7,15 +7,24 @@ import seaborn as sns
 import plotly.figure_factory as ff
 
 # Function to safely read CSV files with encoding
+import pandas as pd
+
 def read_csv_safely(file_path):
     encodings = ['utf-8', 'latin1', 'iso-8859-1']
     for encoding in encodings:
         try:
-            df = pd.read_csv(file_path, encoding=encoding)
+            # Use additional options to handle potential issues
+            df = pd.read_csv(file_path, encoding=encoding, 
+                             delimiter=',',  # Specify delimiter if known
+                             error_bad_lines=False,  # Skip bad lines
+                             warn_bad_lines=True,  # Show warnings for bad lines
+                             engine='python')  # Use Python engine for more flexible parsing
             return df
-        except UnicodeDecodeError:
+        except (UnicodeDecodeError, pd.errors.ParserError) as e:
+            print(f"Error reading file with encoding {encoding}: {e}")
             continue
-    raise ValueError("Unable to read the file with supported encodings.")
+    raise ValueError("Unable to read the file with supported encodings and options.")
+
 
 # Read CSV files
 df = read_csv_safely('athlete_events.csv')
